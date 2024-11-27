@@ -4,6 +4,7 @@ import pyautogui
 import pytesseract
 from PIL import ImageGrab
 import numpy as np
+import cv2
 
 # Global variables to track user activity and synchronization
 user_is_active = False
@@ -15,34 +16,13 @@ debug_print = False  # Add debug print flag
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-def find_text_on_screen(search_text):
-    """
-    Finds the position of specific text on screen using OCR.
-    Returns the center coordinates of the found text or None if not found.
-    """
-    screenshot = ImageGrab.grab()
-    # Convert to numpy array for processing
-    screenshot_np = np.array(screenshot)
-    
-    # Get OCR data with bounding boxes
-    data = pytesseract.image_to_data(screenshot_np, output_type=pytesseract.Output.DICT)
-    
-    for i, text in enumerate(data['text']):
-        if search_text.lower() in text.lower():
-            x = data['left'][i]
-            y = data['top'][i]
-            w = data['width'][i]
-            h = data['height'][i]
-            # Return center position of the text
-            return (x + w//2, y + h//2)
-    return None
 
 def get_configuration():
     """
     Gets reference text position and button positions relative to it.
     Returns tuple of (reference_text, text_pos, relative_positions)
     """
-    reference_text = "screenpasswsshsdjfksdf"
+    reference_text = "distribucion"
     # # Get reference text
     # reference_text = input("Enter the text to look for on screen: ")
     # input("Make sure the text is visible on screen and press Enter...")
@@ -55,15 +35,60 @@ def get_configuration():
     
     # Get button positions and calculate relative positions
     relative_positions = []
-    for i in range(2):
-        input(f"Move the mouse to button {i+1} and press Enter...")
-        button_pos = pyautogui.position()
-        # Calculate relative offset from text position
-        relative_pos = (button_pos[0] - text_pos[0], button_pos[1] - text_pos[1])
-        relative_positions.append(relative_pos)
-        print(f"Button {i+1} relative position: {relative_pos}")
+
+    if len(relative_positions) < 2:
+        for i in range(2):
+            input(f"Move the mouse to button {i+1} and press Enter...")
+            button_pos = pyautogui.position()
+            # Calculate relative offset from text position
+            relative_pos = (button_pos[0] - text_pos[0], button_pos[1] - text_pos[1])
+            relative_positions.append(relative_pos)
+            print(f"Button {i+1} relative position: {relative_pos}")
     
     return reference_text, text_pos, relative_positions
+
+
+def find_text_on_screen(search_text):
+    """
+    Finds the position of specific text on screen using OCR.
+    Returns the center coordinates of the found text or None if not found.
+    """
+    screenshot = ImageGrab.grab()
+    # Convert to numpy array for processing
+    screenshot_np = np.array(screenshot)
+    
+    # Convert to grayscale
+    gray = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2GRAY)
+    
+    # Apply adaptive thresholding to handle different lighting conditions
+    binary = cv2.adaptiveThreshold(
+        gray,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        11,  # Block size
+        2    # C constant
+    )
+    
+    # Optional: Apply slight blur to reduce noise
+    denoised = cv2.GaussianBlur(binary, (3,3), 0)
+    
+    # Debug: Save processed image
+    if debug_print:
+        cv2.imwrite('processed_screenshot.png', denoised)
+    
+    # Get OCR data with bounding boxes
+    data = pytesseract.image_to_data(denoised, output_type=pytesseract.Output.DICT)
+    
+    for i, text in enumerate(data['text']):
+        if search_text.lower() in text.lower():
+            x = data['left'][i]
+            y = data['top'][i]
+            w = data['width'][i]
+            h = data['height'][i]
+            # Return center position of the text
+            return (x + w//2, y + h//2)
+    return None
 
 def check_mouse_position():
     """

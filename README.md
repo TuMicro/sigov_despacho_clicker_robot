@@ -7,7 +7,7 @@ Download and install Tesseract OCR from: https://github.com/UB-Mannheim/tesserac
 # 2. Install dependencies
 
 ```
-	pip install pyautogui pynput pytesseract pillow numpy
+	pip install pyautogui pynput pytesseract pillow numpy opencv-python
 ```
 
 # 3. Run the script
