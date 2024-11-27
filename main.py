@@ -23,20 +23,20 @@ def get_configuration():
     Returns tuple of (reference_text, text_pos, relative_positions)
     """
     reference_text = "transbordo"
-    # # Get reference text
-    # reference_text = input("Enter the text to look for on screen: ")
-    # input("Make sure the text is visible on screen and press Enter...")
-    
-    text_pos = find_text_on_screen(reference_text)
-
-    if not text_pos:
-        raise Exception("Reference text not found on screen!")
-    print(f"Reference text found at: {text_pos}")
     
     # Get button positions and calculate relative positions
     relative_positions = [(-362, -247), (-362, -230)]
 
     if len(relative_positions) < 2:
+        # # Get reference text
+        # reference_text = input("Enter the text to look for on screen: ")
+        # input("Make sure the text is visible on screen and press Enter...")
+        text_pos = find_text_on_screen(reference_text)
+        
+        if not text_pos:
+            raise Exception("Reference text not found on screen!")
+        print(f"Reference text found at: {text_pos}")
+        
         for i in range(2):
             input(f"Move the mouse to button {i+1} and press Enter...")
             button_pos = pyautogui.position()
