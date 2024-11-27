@@ -22,7 +22,7 @@ def get_configuration():
     Gets reference text position and button positions relative to it.
     Returns tuple of (reference_text, text_pos, relative_positions)
     """
-    reference_text = "distribucion"
+    reference_text = "transbordo"
     # # Get reference text
     # reference_text = input("Enter the text to look for on screen: ")
     # input("Make sure the text is visible on screen and press Enter...")
@@ -34,7 +34,7 @@ def get_configuration():
     print(f"Reference text found at: {text_pos}")
     
     # Get button positions and calculate relative positions
-    relative_positions = []
+    relative_positions = [(-362, -247), (-362, -230)]
 
     if len(relative_positions) < 2:
         for i in range(2):
