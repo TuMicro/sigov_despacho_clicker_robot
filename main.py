@@ -27,6 +27,8 @@ def get_configuration():
     # Get button positions and calculate relative positions
     relative_positions = [(-362, -247), (-362, -230)]
 
+    text_pos = None
+
     if len(relative_positions) < 2:
         # # Get reference text
         # reference_text = input("Enter the text to look for on screen: ")
