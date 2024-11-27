@@ -1,4 +1,4 @@
-# 1. Install Python
+# 1. Install Python and Tesseract OCR
 
 Download and install Python from: https://www.python.org/downloads/, don't forget to check "Add Python to PATH"
 
